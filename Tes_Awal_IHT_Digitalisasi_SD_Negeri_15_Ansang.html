@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tes Awal IHT Digitalisasi - SD Negeri 15 Ansang</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f7fb;margin:0;color:#172033}
+.wrap{max-width:760px;margin:auto;padding:24px}
+.card{background:white;border-radius:18px;padding:26px;box-shadow:0 8px 28px #0001}
+h1{margin-top:0;color:#173b70}.muted{color:#667085}
+input{width:100%;padding:13px;border:1px solid #ccd3df;border-radius:10px;box-sizing:border-box;margin:8px 0 16px;font-size:16px}
+button{border:0;border-radius:10px;padding:13px 18px;font-weight:700;cursor:pointer}
+.start,.next{background:#173b70;color:white}.opt{display:block;width:100%;text-align:left;background:#f3f6fa;margin:10px 0;border:2px solid transparent}
+.opt:hover{border-color:#173b70}.opt.selected{border-color:#173b70;background:#eaf0fb}
+.bar{height:8px;background:#e8edf4;border-radius:8px;overflow:hidden;margin:16px 0}.fill{height:100%;background:#173b70;width:0}
+.score{font-size:42px;font-weight:800;color:#173b70}.hidden{display:none}
+.small{font-size:14px}.result{background:#f0f6ff;border-radius:14px;padding:18px;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+<h1>TES AWAL IHT DIGITALISASI</h1>
+<p class="muted">SD Negeri 15 Ansang • 10 soal • waktu sekitar 10–15 menit</p>
+<div id="start">
+<label>Nama Peserta</label>
+<input id="name" placeholder="Masukkan nama Anda">
+<button class="start" id="startBtn">Mulai Kuis</button>
+</div>
+<div id="quiz" class="hidden">
+<div class="small" id="progress"></div><div class="bar"><div class="fill" id="fill"></div></div>
+<h2 id="q"></h2><div id="options"></div>
+<button class="next" id="nextBtn">Jawab & Lanjut</button>
+<p class="small muted" id="feedback"></p>
+</div>
+<div id="result" class="hidden">
+<h2>Hasil Tes Awal</h2><div class="score" id="score"></div>
+<p id="resultText"></p>
+<div class="result"><b>Catatan:</b> Tes awal ini digunakan untuk memetakan pemahaman awal peserta sebelum materi IHT.</div>
+<button class="start" onclick="location.reload()">Ulangi</button>
+</div>
+</div></div>
+<script>
+const qs=[
+["Apa yang paling tepat menggambarkan digitalisasi pembelajaran?","Menggunakan teknologi digital untuk mendukung proses belajar","Menghapus semua kegiatan tatap muka","Mengganti semua guru dengan komputer","Menggunakan internet hanya untuk hiburan"],
+["Dalam pembelajaran era digital, guru dapat lebih berperan sebagai...","Fasilitator yang membantu peserta didik belajar","Satu-satunya sumber informasi","Petugas yang hanya memberi tugas","Pengawas penggunaan gawai"],
+["Contoh perangkat digital yang dapat digunakan untuk pembelajaran adalah...","Laptop","Papan tulis kapur saja","Buku tulis saja","Penghapus"],
+["Sebelum menggunakan perangkat digital untuk praktik, hal yang penting dilakukan adalah...","Memastikan perangkat siap dan dapat digunakan","Mematikan koneksi internet","Menghapus semua aplikasi","Membuka semua aplikasi sekaligus"],
+["Sumber belajar digital dapat membantu guru untuk...","Mencari bahan yang sesuai dengan mata pelajaran dan kelas","Menghindari kegiatan belajar","Mengurangi kebutuhan membaca","Menghapus buku paket"],
+["Prompt dalam penggunaan AI untuk pembelajaran adalah...","Instruksi atau permintaan yang diberikan kepada AI","Nama perangkat keras","Kabel penghubung laptop","Jenis jaringan internet"],
+["Prompt yang baik untuk membuat bahan ajar sebaiknya...","Jelas dan menyebutkan kebutuhan pembelajaran","Sangat singkat tanpa tujuan","Tidak menyebutkan jenjang siswa","Hanya berisi satu kata"],
+["Game atau kuis digital dalam pembelajaran dapat digunakan untuk...","Membuat aktivitas belajar lebih interaktif","Menggantikan seluruh proses mengajar","Menghilangkan evaluasi","Membuat siswa tidak perlu belajar"],
+["Salah satu tujuan IHT ini adalah meningkatkan keterampilan guru dalam...","Memanfaatkan perangkat dan platform digital untuk pembelajaran","Menggunakan teknologi untuk hiburan saja","Mengurangi kegiatan praktik","Menghindari sumber belajar digital"],
+["Hasil yang diharapkan dari kegiatan IHT antara lain...","Rencana penerapan digitalisasi pembelajaran dan RTL","Daftar permainan tanpa rencana pembelajaran","Penggunaan perangkat tanpa tujuan","Penghapusan semua bahan ajar cetak"]
+];
+const ans=[0,0,0,0,0,0,0,0,0,0];
+let i=0,score=0,chosen=-1,name="";
+const $=id=>document.getElementById(id);
+$("startBtn").onclick=()=>{name=$("name").value.trim();if(!name){alert("Silakan isi nama peserta.");return}$("start").classList.add("hidden");$("quiz").classList.remove("hidden");render()};
+function render(){
+$("progress").textContent=`Soal ${i+1} dari ${qs.length}`;
+$("fill").style.width=((i)/qs.length*100)+"%";
+$("q").textContent=qs[i][0];$("feedback").textContent="";
+$("options").innerHTML="";
+qs[i].slice(1).forEach((x,n)=>{let b=document.createElement("button");b.className="opt";b.textContent=String.fromCharCode(65+n)+". "+x;b.onclick=()=>{chosen=n;document.querySelectorAll(".opt").forEach(z=>z.classList.remove("selected"));b.classList.add("selected")};$("options").appendChild(b)});
+}
+$("nextBtn").onclick=()=>{
+if(chosen<0){alert("Pilih salah satu jawaban.");return}
+if(chosen===ans[i])score++;
+i++;chosen=-1;
+if(i<qs.length)render();else finish();
+};
+function finish(){
+$("quiz").classList.add("hidden");$("result").classList.remove("hidden");$("fill").style.width="100%";
+$("score").textContent=score+" / "+qs.length;
+$("resultText").textContent=`Terima kasih, ${name}. Hasil ini merupakan gambaran pemahaman awal sebelum mengikuti rangkaian materi IHT.`;
+}
+</script>
+</body>
+</html>
